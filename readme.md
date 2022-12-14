@@ -7,6 +7,8 @@ placeholder node / a better unknown node
 
 # Overview
 
+![](./screenshot.png)
+
 Provides a "better" unknown node which can be handled properly by worldedit and other schematic mechanisms (given they support metadata).
 
 Features:
