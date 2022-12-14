@@ -20,6 +20,7 @@ Use-cases:
 # Api
 
 ```lua
+local pos = { x=0, y=0, z=0 }
 local metadata = {
     inventory = {},
     fields = {
@@ -27,9 +28,14 @@ local metadata = {
     }
 }
 -- place a placeholder manually
-placeholder.place(pos, "unknown:nodename", metadata)
+placeholder.place(pos, {name="unknown:nodename"}, metadata)
+
+-- unwrap the placeholder metadata (returns the original node- and metadata)
+local meta = minetest.get_meta(pos)
+local node, metadata = placeholder.unwrap(meta)
 
 -- try to restore the placeholder at the position
+-- this function gets also called in the placeholder-lbm for automatic restoration
 placeholder.replace(pos)
 ```
 

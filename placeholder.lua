@@ -16,14 +16,17 @@ minetest.register_node("placeholder:placeholder", {
 function placeholder.place(pos, node, metadata)
 	assert(type(node) == "table")
 	minetest.set_node(pos, { name = "placeholder:placeholder", param2 = node.param2 })
-	placeholder.populate(pos, node.name, metadata)
+	placeholder.populate(pos, node, metadata)
 end
 
 -- store the original metadata for later extraction if the node is available then
-function placeholder.populate(pos, node_name, metadata)
+function placeholder.populate(pos, node, metadata)
 	local meta = minetest.get_meta(pos)
-	meta:set_string("infotext", "Unknown node: '" .. node_name .. "'")
-	meta:set_string("original_nodename", node_name)
+	meta:set_string("infotext", "Unknown node: '" .. node.name .. "'")
+	meta:set_string("original_nodename", node.name)
+	if node.param2 then
+		meta:set_int("original_param2", node.param2)
+	end
 
 	if metadata then
 		local serialized_meta = minetest.serialize(metadata)
@@ -33,7 +36,10 @@ end
 
 -- unwraps the placeholder node to the original nodename and metadata
 function placeholder.unwrap(meta)
-	local nodename = meta:get_string("original_nodename")
+	local node = {
+		name = meta:get_string("original_nodename"),
+		param2 = meta:get_int("original_param2")
+	}
 	local metadata
 
 	local serialized_metadata = meta:get_string("original_metadata")
@@ -41,7 +47,7 @@ function placeholder.unwrap(meta)
 		metadata = minetest.deserialize(serialized_metadata)
 	end
 
-	return nodename, metadata
+	return node, metadata
 end
 
 -- try to restore the placeholder at the position
@@ -56,6 +62,12 @@ function placeholder.replace(pos, node)
 	if minetest.registered_nodes[nodename] then
 		-- node exists now, restore it
 		node.name = nodename
+
+		-- only set param2 if set (backwards compat)
+		local param2 = meta:get_int("original_param2")
+		if param2 > 0 then
+			node.param2 = param2
+		end
 		minetest.swap_node(pos, node)
 
 		local serialized_meta = meta:get_string("original_metadata")
@@ -63,6 +75,7 @@ function placeholder.replace(pos, node)
 		meta:set_string("infotext", "")
 		meta:set_string("original_metadata", "")
 		meta:set_string("original_nodename", "")
+		meta:set_string("original_param2", "")
 		if serialized_meta ~= "" then
 			-- restore metadata and inventory
 			local metadata = minetest.deserialize(serialized_meta)
