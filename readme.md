@@ -1,7 +1,7 @@
 placeholder node / a better unknown node
 
-![](https://github.com/blockexchange/placeholder/workflows/luacheck/badge.svg)
-![](https://github.com/blockexchange/placeholder/workflows/test/badge.svg)
+![](https://github.com/BuckarooBanzay/placeholder/workflows/luacheck/badge.svg)
+![](https://github.com/BuckarooBanzay/placeholder/workflows/test/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](license.txt)
 [![Download](https://img.shields.io/badge/Download-ContentDB-blue.svg)](https://content.minetest.net/packages/BuckarooBanzay/placeholder)
 
