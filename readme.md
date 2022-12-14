@@ -23,7 +23,7 @@ Use-cases:
 
 There is a placeholder node (`placeholder:placeholder`) which holds all the relevant data about the unknown node in its metadata:
 * `original_nodename` the original nodename
-* `original_metadata` the original metadata
+* `original_metadata` the original metadata, serialized with `minetest.serialize`
 * `original_param2` (optional) the original param2
 
 # Api
