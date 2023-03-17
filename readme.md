@@ -39,7 +39,20 @@ local metadata = {
 -- place a placeholder manually
 placeholder.place(pos, {name="unknown:nodename"}, metadata)
 
--- unwrap the placeholder metadata (returns the original node- and metadata)
+-- create just the in-memory representation of a placeholder (for later placement)
+local placeholder_node, placeholder_metadata = placeholder.create(node, metadata)
+placeholder_node = {
+    name = "placeholder:placeholder"
+}
+placeholder_metadata = {
+    inventory = {},
+    fields = {
+        ["infotext"] = "Unknown node: 'unknown_nodename'",
+        ["original_metadata"] = ...
+    }
+}
+
+-- unwrap the placeholder metadata (returns the original node- and metadata, useful for schematics)
 local meta = minetest.get_meta(pos)
 local node, metadata = placeholder.unwrap(meta)
 

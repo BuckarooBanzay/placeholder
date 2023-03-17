@@ -12,26 +12,48 @@ minetest.register_node("placeholder:placeholder", {
 	}
 })
 
+-- creates an "ad-hoc" placeholder node
+-- returns:
+-- * the placeholder node: {name="placeholder:placeholder"}
+-- * the placeholder metadata: { inventory={}, fields={} }
+function placeholder.create(node, metadata)
+	local placeholder_node = { name="placeholder:placeholder", param2=node.param2 }
+	local placeholder_metadata = {
+		inventory = {},
+		fields = {
+			["infotext"] = "Unknown node: '" .. node.name .. "'",
+			["original_nodename"] = node.name
+		}
+	}
+
+	if metadata then
+		placeholder_metadata.fields.original_metadata = minetest.serialize(metadata)
+	end
+
+	if node.param2 then
+		placeholder_metadata.fields.original_param2 = node.param2
+	end
+
+	return placeholder_node, placeholder_metadata
+end
+
 -- places a placeholder node and populates the unknown name and metadata
 function placeholder.place(pos, node, metadata)
 	assert(type(node) == "table")
-	minetest.set_node(pos, { name = "placeholder:placeholder", param2 = node.param2 })
-	placeholder.populate(pos, node, metadata)
+	local placeholder_node, placeholder_metadata = placeholder.create(node, metadata)
+
+	minetest.set_node(pos, placeholder_node)
+
+	local meta = minetest.get_meta(pos)
+	meta:from_table(placeholder_metadata)
 end
 
 -- store the original metadata for later extraction if the node is available then
 function placeholder.populate(pos, node, metadata)
-	local meta = minetest.get_meta(pos)
-	meta:set_string("infotext", "Unknown node: '" .. node.name .. "'")
-	meta:set_string("original_nodename", node.name)
-	if node.param2 then
-		meta:set_int("original_param2", node.param2)
-	end
+	local _, placeholder_metadata = placeholder.create(node, metadata)
 
-	if metadata then
-		local serialized_meta = minetest.serialize(metadata)
-		meta:set_string("original_metadata", serialized_meta)
-	end
+	local meta = minetest.get_meta(pos)
+	meta:from_table(placeholder_metadata.fields)
 end
 
 -- unwraps the placeholder node to the original nodename and metadata
