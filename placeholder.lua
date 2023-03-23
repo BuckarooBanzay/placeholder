@@ -53,7 +53,7 @@ function placeholder.populate(pos, node, metadata)
 	local _, placeholder_metadata = placeholder.create(node, metadata)
 
 	local meta = minetest.get_meta(pos)
-	meta:from_table(placeholder_metadata.fields)
+	meta:from_table(placeholder_metadata)
 end
 
 -- unwraps the placeholder node to the original nodename and metadata
