@@ -12,11 +12,22 @@ minetest.register_node("placeholder:placeholder", {
 	}
 })
 
--- creates an "ad-hoc" placeholder node
+-- creates an "ad-hoc" placeholder node if the node isn't available or aliased
 -- returns:
 -- * the placeholder node: {name="placeholder:placeholder"}
 -- * the placeholder metadata: { inventory={}, fields={} }
 function placeholder.create(node, metadata)
+	if minetest.registered_aliases[node.name] then
+		-- alias defined, map to specified name
+		node.name = minetest.registered_aliases[node.name]
+		return node, metadata
+	end
+
+	if minetest.registered_nodes[node.name] then
+		-- node is registered
+		return node, metadata
+	end
+
 	local placeholder_node = { name="placeholder:placeholder", param2=node.param2 }
 	local placeholder_metadata = {
 		inventory = {},
@@ -62,6 +73,12 @@ function placeholder.unwrap(meta)
 		name = meta:get_string("original_nodename"),
 		param2 = meta:get_int("original_param2")
 	}
+
+	if minetest.registered_aliases[node.name] then
+		-- alias defined, map to specified name
+		node.name = minetest.registered_aliases[node.name]
+	end
+
 	local metadata
 
 	local serialized_metadata = meta:get_string("original_metadata")
@@ -81,6 +98,12 @@ function placeholder.replace(pos, node)
 		-- invalid nodename
 		return
 	end
+
+	if minetest.registered_aliases[nodename] then
+		-- alias defined, map to specified name
+		nodename = minetest.registered_aliases[nodename]
+	end
+
 	if minetest.registered_nodes[nodename] then
 		-- node exists now, restore it
 		node.name = nodename
