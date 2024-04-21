@@ -11,3 +11,5 @@ jobs:
     - uses: buckaroobanzay/mtt@main
       with:
         modname: placeholder
+        enable_coverage: "true"
+    - uses: coverallsapp/github-action@v1
